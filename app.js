@@ -2,7 +2,6 @@ const symbols = ['🍎', '🍋', '🍒', '💎', '🔔', '⭐'];
 let balance = 100;
 let isAutoSpinning = false;
 
-// --- AUDIO SETUP ---
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 const gridElement = document.getElementById('slotGrid');
 const balanceDisplay = document.getElementById('balance');
@@ -54,6 +53,10 @@ const spin = async () => {
     if (audioCtx.state === 'suspended') audioCtx.resume();
     
     const currentBet = parseFloat(betInput.value);
+    
+    // Safety check for dynamic slot height (Responsive Fix)
+    const currentSlotHeight = document.querySelector('.slot').offsetHeight;
+
     if (isNaN(currentBet) || currentBet <= 0) {
         statusText.innerText = "Invalid Bet!";
         isAutoSpinning = false;
@@ -76,26 +79,20 @@ const spin = async () => {
     // 1 in 1,000,000 Jackpot Roll
     const jackpotRoll = Math.floor(Math.random() * 1000000) + 1;
     const isJackpotWinner = (jackpotRoll === 777777);
+    const isNearMiss = (jackpotRoll >= 777770 && jackpotRoll <= 777785 && !isJackpotWinner);
 
-    // --- WEIGHTED PROBABILITY POOL ---
-    // Increase frequency of common fruits to boost low-tier wins
-    const weightedPool = [
-        '🍎', '🍎', '🍎', // Triple weight
-        '🍋', '🍋', '🍋', 
-        '🍒', '🍒', '🍒', 
-        '💎', '🔔'       // Standard weight
-    ];
+    const weightedPool = ['🍎', '🍎', '🍎', '🍋', '🍋', '🍋', '🍒', '🍒', '🍒', '💎', '🔔'];
 
     const results = [];
     const animations = slots.map((slot, i) => {
         const reel = slot.querySelector('.reel');
-        
-        const strip = Array.from({ length: 14 }, () => {
-            // Stars remain rare at 5%
-            return Math.random() > 0.95 ? '⭐' : weightedPool[Math.floor(Math.random() * weightedPool.length)];
-        });
+        const strip = Array.from({ length: 14 }, () => 
+            Math.random() > 0.95 ? '⭐' : weightedPool[Math.floor(Math.random() * weightedPool.length)]
+        );
 
-        if (isJackpotWinner && i < 10) strip[strip.length - 1] = '⭐';
+        // Visual Forcing for Jackpot or Near Miss
+        if (isJackpotWinner && i < 12) strip[strip.length - 1] = '⭐';
+        if (isNearMiss && i < 5) strip[strip.length - 1] = '⭐';
 
         const finalSymbol = strip[strip.length - 1];
         results.push(finalSymbol);
@@ -111,9 +108,11 @@ const spin = async () => {
                 const row = Math.floor(i / 6);
                 const delay = col * 0.1 + row * 0.03;
                 reel.style.transition = `transform ${0.5 + delay}s cubic-bezier(0.45, 0.05, 0.55, 0.95)`;
-                reel.style.transform = `translateY(-${(strip.length - 1) * 75}px)`;
+                
+                // FIXED: Use dynamic height instead of hardcoded 75px
+                reel.style.transform = `translateY(-${(strip.length - 1) * currentSlotHeight}px)`;
+                
                 setTimeout(() => {
-                    // Fixed typo: 'tr iangle' -> 'triangle'
                     if (i % 6 === 0) playSound(120, 'triangle', 0.1, 0.03);
                     resolve();
                 }, 500 + (delay * 1000));
@@ -130,7 +129,6 @@ const spin = async () => {
 
     for (const [symbol, count] of Object.entries(counts)) {
         if (symbol === '⭐') continue;
-
         if (count >= 10) {
             const intervals = Math.floor((count - 10) / 2);
             const payout = (currentBet * 0.2) * Math.pow(2, intervals);
@@ -138,7 +136,6 @@ const spin = async () => {
         } 
         else if (count >= 5) {
             const intervals = Math.floor((count - 5) / 2);
-            // Low Tier: Start at 1.5x Bet multiplier (per your logic)
             const baseLow = currentBet * 0.15;
             const payout = baseLow + (baseLow * intervals * 0.5);
             totalSpinWin += payout;
@@ -147,15 +144,19 @@ const spin = async () => {
 
     if (isJackpotWinner) {
         await triggerJackpot();
-    } else if (totalSpinWin > 0) {
-        balance += totalSpinWin;
-        statusText.innerText = `WIN! +$${totalSpinWin.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-        statusText.style.color = "#4ef037";
-        const notes = totalSpinWin >= (currentBet * 2) ? [523, 659, 783, 1046] : [523, 659, 783];
-        notes.forEach((f, i) => setTimeout(() => playSound(f, 'sine', 0.4, 0.1), i * 150));
     } else {
-        statusText.innerText = "Try Again";
-        statusText.style.color = "white";
+        if (isNearMiss) statusText.innerText = "SO CLOSE!";
+        
+        if (totalSpinWin > 0) {
+            balance += totalSpinWin;
+            statusText.innerText = `WIN! +$${totalSpinWin.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            statusText.style.color = "#4ef037";
+            const notes = totalSpinWin >= (currentBet * 2) ? [523, 659, 783, 1046] : [523, 659, 783];
+            notes.forEach((f, i) => setTimeout(() => playSound(f, 'sine', 0.4, 0.1), i * 150));
+        } else {
+            statusText.innerText = isNearMiss ? "SO CLOSE!" : "Try Again";
+            statusText.style.color = "white";
+        }
     }
 
     updateUI();
@@ -175,16 +176,13 @@ const triggerJackpot = async () => {
     const exponent = Math.random() * (9 - 6) + 6; 
     const jackpotAmount = Math.floor(Math.pow(10, exponent));
     balance += jackpotAmount;
-
     document.body.classList.add('shake');
     jackpotOverlay.style.display = 'flex';
     jackpotOverlay.innerHTML = `<h1>⭐ ULTRA RARE JACKPOT ⭐</h1><div style="font-size: 3.5rem">$${jackpotAmount.toLocaleString()}</div>`;
-    
     for(let i=0; i<30; i++) {
         playSound(300 + (i % 3 * 200), 'square', 0.1, 0.1);
         await new Promise(r => setTimeout(r, 100));
     }
-
     await new Promise(r => setTimeout(r, 6000));
     jackpotOverlay.style.display = 'none';
     document.body.classList.remove('shake');

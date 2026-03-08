@@ -204,6 +204,7 @@ footer {
     justify-content: center;
     align-items: center;
     font-size: 2.2rem;
+    font-family: 'Noto Color Emoji', 'Arial', sans-serif;
 }
 
 .gold { color: gold; text-shadow: 0 0 8px gold; font-weight: bold; }
@@ -240,73 +241,47 @@ button:disabled { background: #444; cursor: not-allowed; }
 /* Responsive adjustments for phones (max-width: 600px) */
 @media (max-width: 600px) {
     body {
-        overflow-y: auto; /* Allow scrolling if the game is taller than the phone screen */
+        /* Allow vertical scrolling on small phones */
+        overflow-y: auto !important; 
+        height: auto;
+        padding-top: 20px;
+        padding-bottom: 20px;
     }
 
     .game-container {
-        padding: 10px;
-        width: 100%;
+        /* Prevent the container from being taller than the screen */
+        justify-content: flex-start; 
+        height: auto;
     }
 
-    /* Scale down the logo */
-    #pagcor-logo {
-        height: 50px;
-    }
-
-    /* Scale down the stats text */
-    .stats {
-        font-size: 1rem;
-        gap: 15px;
-        margin-bottom: 10px;
-    }
-
-    /* Shrink the grid to fit mobile screens */
     .slot-grid {
-        grid-template-columns: repeat(6, 50px); /* Reduce slots from 75px to 50px */
+        grid-template-columns: repeat(6, 50px);
         grid-template-rows: repeat(6, 50px);
-        gap: 4px;
-        padding: 8px;
+        gap: 5px;
     }
 
-    /* Adjust slot containers to match new grid size */
     .slot {
         width: 50px;
         height: 50px;
     }
 
-    /* Shrink symbols and center them in smaller slots */
     .symbol {
-        width: 50px;
         height: 50px;
-        font-size: 1.5rem; /* Smaller emojis */
+        width: 50px;
+        font-size: 1.8rem;
     }
 
-    /* Adjust buttons for easier thumb-tapping */
-    button {
-        padding: 10px 20px;
-        font-size: 1rem;
-        margin: 5px 2px;
+    /* Important: Ensure the reels know they are smaller now */
+    .reel {
+        width: 100%;
+        height: 100%;
     }
 
-    /* Reposition and scale background logos so they don't look messy on mobile */
-    #gcash-logo {
-        width: 200px;
-        right: -10%;
-        bottom: 5%;
+    /* Scale the jackpot text so it doesn't bleed off screen */
+    #jackpot-overlay h1 {
+        font-size: 1.5rem;
     }
-
-    #keitho {
-        width: 250px;
-        left: -10%;
-        top: 5%;
-    }
-
-    /* Smaller footer for mobile */
-    .footer-site-name {
-        font-size: 1rem;
-    }
-
-    .footer-note {
-        font-size: 0.7rem;
+    #jackpot-overlay div {
+        font-size: 2rem !important;
     }
 }
