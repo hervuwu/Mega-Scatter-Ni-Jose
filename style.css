@@ -1,3 +1,4 @@
+/* --- GLOBAL STYLES --- */
 body {
     background-color: #0f0f1b;
     color: white;
@@ -13,21 +14,13 @@ body {
 .game-container { 
     display: flex;
     flex-direction: column;
-    align-items: center; /* This centers all direct children (logo, stats, grid, controls) */
+    align-items: center;
     text-align: center;
-    position: relative; /* Essential for the absolute positioning of the GCash logo */
+    position: relative;
+    width: 100%;
 }
-   
-#gcash-logo {
-    position: absolute;
-    bottom: 20%;      /* Distance from the bottom */
-    right: -80%;       /* Distance from the right (negative moves it slightly off-edge) */
-    width: 500px;     /* Adjust size as needed */
-    opacity: 0.15;    /* Makes it transparent (0.0 to 1.0) */
-    z-index: -1;      /* Pushes it BEHIND the slots and buttons */
-    transform: rotate(-15deg); /* Tilts the logo */
-    pointer-events: none; /* Makes sure you can still click buttons through it */
-}
+
+/* --- LOGO & BACKGROUND ELEMENTS --- */
 #pagcor-logo { 
     height: 70px; 
     opacity: 0.8; 
@@ -36,16 +29,30 @@ body {
     justify-content: center;
     align-items: center;
 }
-#keitho {
+
+#gcash-logo, #keitho {
     position: absolute;
-    top: 10%;
-    left: -80%;
-    width: 600px;
-    opacity: 0.5;
-    z-index: -1;
+    z-index: -1; /* Keeps them behind buttons and grid */
     pointer-events: none;
+    opacity: 0.15; /* Transparency so they don't distract */
+    filter: grayscale(50%); /* Optional: makes them look more like a background watermark */
 }
 
+#gcash-logo {
+    bottom: 20%;
+    right: 15%; /* Changed from -80% to 5% to keep it on screen */
+    width: 500px; /* Scaled down for better fit */
+    transform: rotate(-15deg);
+}
+
+#keitho {
+    top: 10%;
+    left: 15%; /* Changed from -50% to 15% to keep it on screen */
+    width: 600px; /* Adjusted width */
+    opacity: 0.3; /* Increased slightly so you can actually see him */
+}
+
+/* --- STATS & INPUTS --- */
 .stats { 
     font-size: 1.4rem; 
     margin-bottom: 20px; 
@@ -61,12 +68,13 @@ body {
     border: 1px solid #ff002b;
     border-radius: 4px;
     padding: 3px;
-    width: 50px;
+    width: 60px;
     font-size: 1.2rem;
     font-weight: bold;
     text-align: center;
 }
 
+/* --- THE GRID & SLOTS --- */
 .slot-grid {
     display: grid;
     grid-template-columns: repeat(6, 75px);
@@ -75,8 +83,6 @@ body {
     padding: 15px;
     border-radius: 12px;
     margin: 0 auto 20px auto;
-    
-    /* Replace static border with an animated glow */
     border: 5px solid transparent;
     background: linear-gradient(#1a1a2e, #1a1a2e) padding-box,
                 linear-gradient(45deg, #ff0000, #002bff, #ff0000) border-box;
@@ -84,117 +90,51 @@ body {
     animation: gridGlow 5s linear infinite;
 }
 
-@keyframes gridGlow {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-footer {
-    margin-top: 30px;
-    padding: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    width: 100%;
-}
-
-.footer-site-name {
-    font-size: 1.2rem;
-    font-weight: bold;
-    letter-spacing: 2px;
-    color: #e94560; /* Matches your button color */
-    margin-bottom: 5px;
-}
-
-.footer-note {
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.5);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-footer {
-    margin-top: 30px;
-    padding: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    width: 100%;
-}
-
-.footer-site-name {
-    font-size: 1.2rem;
-    font-weight: bold;
-    letter-spacing: 2px;
-    color: #e94560; /* Matches your button color */
-    margin-bottom: 5px;
-}
-
-.footer-note {
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.5);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-/* Ensure the background logos don't cover the footer text */
-#gcash-logo, #keitho {
-    z-index: -1;
-}
-/* Update the existing .slot container */
 .slot {
-    background: #16213e; /* Set to your inner dark grid color */
+    background: #16213e;
     width: 75px;
     height: 75px;
     border-radius: 6px;
     overflow: hidden;
     position: relative;
-    /* Remove standard CSS border */
     border: none;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5); /* Optional: Soft glow */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
 
-/* THE ROTATING GRADIENT ELEMENT */
+/* Slot Rainbow Border Animation */
 .slot::before {
     content: '';
     position: absolute;
-    width: 150%;  /* Must be larger than the slot to cover corners during rotation */
+    width: 150%;
     height: 150%;
-    top: -25%;    /* Center it */
+    top: -25%;
     left: -25%;
-    
-    /* Animated Gradient (colors from image) */
     background: conic-gradient(
         transparent, 
-        #FF9100 20%, /* Main Orange */
-        #FF4500 40%, /* Orange-Red accent */
+        #FF9100 20%, 
+        #FF4500 40%, 
         transparent 60%
     );
-    
-    /* Animation Rule */
     animation: rotateBorder 3s linear infinite;
-    z-index: 1; /* Place above the background, but below the inner mask */
+    z-index: 1;
 }
 
-/* THE INNER MASK (Creates the 'line' look) */
+/* Inner Mask to create the "line" border look */
 .slot::after {
     content: '';
     position: absolute;
-    inset: 3px; /* How thick the border line is (e.g., 3px) */
-    background: #fff; /* The visual inner slot color (or set to your dark theme) */
-    border-radius: 4px; /* Slightly smaller than parent to match corner curve */
-    z-index: 2; /* Place on top of the gradient */
+    inset: 3px; 
+    background: #16213e; 
+    border-radius: 4px;
+    z-index: 2;
 }
 
-/* Ensure the reel content is on the highest layer */
 .reel {
     display: flex;
     flex-direction: column;
     width: 100%;
     position: relative;
-    z-index: 3; /* Must be highest to show over the border elements */
-}
-
-/* --- THE ROTATION KEYFRAMES --- */
-@keyframes rotateBorder {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    z-index: 3;
 }
 
 .symbol {
@@ -204,11 +144,14 @@ footer {
     justify-content: center;
     align-items: center;
     font-size: 2.2rem;
-    font-family: 'Noto Color Emoji', 'Arial', sans-serif;
+    flex-shrink: 0;
+    overflow: visible;
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Android Emoji", sans-serif;
 }
 
 .gold { color: gold; text-shadow: 0 0 8px gold; font-weight: bold; }
 
+/* --- CONTROLS --- */
 button {
     padding: 12px 30px;
     font-size: 1.2rem;
@@ -219,11 +162,25 @@ button {
     cursor: pointer;
     font-weight: bold;
     margin: 0 5px;
+    transition: transform 0.1s;
 }
 
+button:active { transform: scale(0.95); }
 button:disabled { background: #444; cursor: not-allowed; }
 
 #status { margin-top: 15px; font-weight: bold; font-size: 1.2rem; min-height: 1.5em; }
+
+/* --- ANIMATIONS & OVERLAYS --- */
+@keyframes gridGlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes rotateBorder {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
 
 #jackpot-overlay {
     display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -238,19 +195,33 @@ button:disabled { background: #444; cursor: not-allowed; }
     100% { transform: translate(2px, 2px); }
 }
 
-/* Responsive adjustments for phones (max-width: 600px) */
+/* --- FOOTER --- */
+footer {
+    margin-top: 30px;
+    padding: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    width: 100%;
+}
+
+.footer-site-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: #e94560;
+    margin-bottom: 5px;
+}
+
+.footer-note {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* --- MOBILE RESPONSIVE (CLEANED) --- */
 @media (max-width: 600px) {
     body {
-        /* Allow vertical scrolling on small phones */
         overflow-y: auto !important; 
-        height: auto;
-        padding-top: 20px;
-        padding-bottom: 20px;
-    }
-
-    .game-container {
-        /* Prevent the container from being taller than the screen */
-        justify-content: flex-start; 
         height: auto;
     }
 
@@ -258,30 +229,37 @@ button:disabled { background: #444; cursor: not-allowed; }
         grid-template-columns: repeat(6, 50px);
         grid-template-rows: repeat(6, 50px);
         gap: 5px;
+        padding: 10px;
     }
 
-    .slot {
-        width: 50px;
-        height: 50px;
+    .slot, .symbol {
+        width: 50px !important;
+        height: 50px !important;
     }
 
     .symbol {
-        height: 50px;
-        width: 50px;
-        font-size: 1.8rem;
+        font-size: 1.5rem !important; 
+        line-height: 50px;
     }
 
-    /* Important: Ensure the reels know they are smaller now */
-    .reel {
-        width: 100%;
-        height: 100%;
+    footer {
+        padding: 15px;
+        margin-top: 0%;
     }
 
-    /* Scale the jackpot text so it doesn't bleed off screen */
-    #jackpot-overlay h1 {
-        font-size: 1.5rem;
+   #gcash-logo {
+        width: 120px;
+        right: 2%;
+        bottom: 18%; /* Adjusted for better fit on mobile */
     }
-    #jackpot-overlay div {
-        font-size: 2rem !important;
+    #keitho {
+        width: 150px;
+        left: 2%;
+        top: 5%;
+    }
+
+    .stats {
+        gap: 15px;
+        font-size: 1.1rem;
     }
 }

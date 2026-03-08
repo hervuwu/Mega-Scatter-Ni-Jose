@@ -1,7 +1,21 @@
-const symbols = ['🍎', '🍋', '🍒', '💎', '🔔', '⭐'];
+/**
+ * 1. SYMBOL CONFIGURATION
+ * If you have SVG files, replace the Emoji with <img src="yourfile.svg">
+ */
+const symbolMap = {
+    '🍎': '🍎',
+    '🍋': '🍋',
+    '🍒': '🍒',
+    '💎': '💎',
+    '🔔': '🔔',
+    '⭐': '⭐'
+};
+
+const symbols = Object.keys(symbolMap);
 let balance = 100;
 let isAutoSpinning = false;
 
+// --- DOM ELEMENTS ---
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 const gridElement = document.getElementById('slotGrid');
 const balanceDisplay = document.getElementById('balance');
@@ -54,8 +68,12 @@ const spin = async () => {
     
     const currentBet = parseFloat(betInput.value);
     
-    // Safety check for dynamic slot height (Responsive Fix)
-    const currentSlotHeight = document.querySelector('.slot').offsetHeight;
+    /**
+     * RESPONSIVE FIX: Detect height dynamically
+     * This ensures the reel scrolls 50px on mobile and 75px on desktop.
+     */
+    const currentSlot = document.querySelector('.slot');
+    const currentSlotHeight = currentSlot ? currentSlot.offsetHeight : 75;
 
     if (isNaN(currentBet) || currentBet <= 0) {
         statusText.innerText = "Invalid Bet!";
@@ -90,14 +108,24 @@ const spin = async () => {
             Math.random() > 0.95 ? '⭐' : weightedPool[Math.floor(Math.random() * weightedPool.length)]
         );
 
-        // Visual Forcing for Jackpot or Near Miss
         if (isJackpotWinner && i < 12) strip[strip.length - 1] = '⭐';
         if (isNearMiss && i < 5) strip[strip.length - 1] = '⭐';
 
         const finalSymbol = strip[strip.length - 1];
         results.push(finalSymbol);
 
-        reel.innerHTML = strip.map(s => `<div class="symbol ${s === '⭐' ? 'gold' : ''}">${s}</div>`).join('');
+        /**
+         * RENDERING FIX: Clear and rebuild using textContent for stability
+         */
+        reel.innerHTML = '';
+        strip.forEach(s => {
+            const symDiv = document.createElement('div');
+            symDiv.className = `symbol ${s === '⭐' ? 'gold' : ''}`;
+            // If using SVGs, change .textContent to .innerHTML and use symbolMap[s]
+            symDiv.textContent = symbolMap[s];
+            reel.appendChild(symDiv);
+        });
+
         reel.style.transition = 'none';
         reel.style.transform = 'translateY(0)';
         reel.offsetHeight; 
@@ -109,7 +137,7 @@ const spin = async () => {
                 const delay = col * 0.1 + row * 0.03;
                 reel.style.transition = `transform ${0.5 + delay}s cubic-bezier(0.45, 0.05, 0.55, 0.95)`;
                 
-                // FIXED: Use dynamic height instead of hardcoded 75px
+                // DYNAMIC CALCULATION: strip length * actual slot height
                 reel.style.transform = `translateY(-${(strip.length - 1) * currentSlotHeight}px)`;
                 
                 setTimeout(() => {
@@ -122,23 +150,20 @@ const spin = async () => {
 
     await Promise.all(animations);
 
+    // --- WIN CALCULATION ---
     const counts = {};
     results.forEach(s => counts[s] = (counts[s] || 0) + 1);
 
     let totalSpinWin = 0;
-
     for (const [symbol, count] of Object.entries(counts)) {
         if (symbol === '⭐') continue;
         if (count >= 10) {
             const intervals = Math.floor((count - 10) / 2);
-            const payout = (currentBet * 0.2) * Math.pow(2, intervals);
-            totalSpinWin += payout;
-        } 
-        else if (count >= 5) {
+            totalSpinWin += (currentBet * 0.2) * Math.pow(2, intervals);
+        } else if (count >= 5) {
             const intervals = Math.floor((count - 5) / 2);
             const baseLow = currentBet * 0.15;
-            const payout = baseLow + (baseLow * intervals * 0.5);
-            totalSpinWin += payout;
+            totalSpinWin += baseLow + (baseLow * intervals * 0.5);
         }
     }
 
@@ -146,7 +171,6 @@ const spin = async () => {
         await triggerJackpot();
     } else {
         if (isNearMiss) statusText.innerText = "SO CLOSE!";
-        
         if (totalSpinWin > 0) {
             balance += totalSpinWin;
             statusText.innerText = `WIN! +$${totalSpinWin.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
