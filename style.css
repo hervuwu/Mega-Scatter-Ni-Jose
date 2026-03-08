@@ -236,3 +236,77 @@ button:disabled { background: #444; cursor: not-allowed; }
     50% { transform: translate(-2px, -2px); }
     100% { transform: translate(2px, 2px); }
 }
+
+/* Responsive adjustments for phones (max-width: 600px) */
+@media (max-width: 600px) {
+    body {
+        overflow-y: auto; /* Allow scrolling if the game is taller than the phone screen */
+    }
+
+    .game-container {
+        padding: 10px;
+        width: 100%;
+    }
+
+    /* Scale down the logo */
+    #pagcor-logo {
+        height: 50px;
+    }
+
+    /* Scale down the stats text */
+    .stats {
+        font-size: 1rem;
+        gap: 15px;
+        margin-bottom: 10px;
+    }
+
+    /* Shrink the grid to fit mobile screens */
+    .slot-grid {
+        grid-template-columns: repeat(6, 50px); /* Reduce slots from 75px to 50px */
+        grid-template-rows: repeat(6, 50px);
+        gap: 4px;
+        padding: 8px;
+    }
+
+    /* Adjust slot containers to match new grid size */
+    .slot {
+        width: 50px;
+        height: 50px;
+    }
+
+    /* Shrink symbols and center them in smaller slots */
+    .symbol {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem; /* Smaller emojis */
+    }
+
+    /* Adjust buttons for easier thumb-tapping */
+    button {
+        padding: 10px 20px;
+        font-size: 1rem;
+        margin: 5px 2px;
+    }
+
+    /* Reposition and scale background logos so they don't look messy on mobile */
+    #gcash-logo {
+        width: 200px;
+        right: -10%;
+        bottom: 5%;
+    }
+
+    #keitho {
+        width: 250px;
+        left: -10%;
+        top: 5%;
+    }
+
+    /* Smaller footer for mobile */
+    .footer-site-name {
+        font-size: 1rem;
+    }
+
+    .footer-note {
+        font-size: 0.7rem;
+    }
+}
