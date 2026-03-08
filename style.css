@@ -5,10 +5,13 @@ body {
     font-family: 'Arial', sans-serif;
     display: flex;
     justify-content: center;
-    align-items: center;
+    /* Remove align-items: center to let content flow from the top if it overflows */
+    align-items: flex-start; 
     min-height: 100vh;
     margin: 0;
-    overflow: hidden;
+    /* Change hidden to auto to prevent cutting off the footer */
+    overflow-y: auto; 
+    padding: 20px 0; /* Adds a little breathing room at the very top and bottom */
 }
 
 .game-container { 
@@ -18,6 +21,8 @@ body {
     text-align: center;
     position: relative;
     width: 100%;
+    /* Ensure the container takes up at least the full height to keep background elements positioned */
+    min-height: 100vh; 
 }
 
 /* --- LOGO & BACKGROUND ELEMENTS --- */
@@ -197,25 +202,48 @@ button:disabled { background: #444; cursor: not-allowed; }
 
 /* --- FOOTER --- */
 footer {
-    margin-top: 30px;
-    padding: 20px;
+    margin-top: auto; /* Pushes footer to the bottom of the container */
+    padding: 40px 20px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     width: 100%;
+    background: rgba(0, 0, 0, 0.4); 
+    box-sizing: border-box; /* Prevents padding from adding to width */
 }
 
-.footer-site-name {
-    font-size: 1.2rem;
-    font-weight: bold;
-    letter-spacing: 2px;
-    color: #e94560;
-    margin-bottom: 5px;
+.disclaimer {
+    font-size: 0.85rem;
+    color: #ff9100; /* Warning orange color */
+    max-width: 600px;
+    margin: 15px auto;
+    line-height: 1.4;
+    font-style: italic;
+}
+
+.footer-links {
+    margin: 15px 0;
+}
+
+.footer-links a {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.footer-links a:hover {
+    opacity: 1;
+    text-decoration: underline;
 }
 
 .footer-note {
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
 }
 
 /* --- MOBILE RESPONSIVE (CLEANED) --- */
@@ -245,6 +273,10 @@ footer {
     footer {
         padding: 15px;
         margin-top: 0%;
+    }
+    disclaimer {
+        font-size: 0.75rem;
+        padding: 0 10px;
     }
 
    #gcash-logo {
