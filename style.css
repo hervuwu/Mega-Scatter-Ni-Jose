@@ -1,0 +1,238 @@
+body {
+    background-color: #0f0f1b;
+    color: white;
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    overflow: hidden;
+}
+
+.game-container { 
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* This centers all direct children (logo, stats, grid, controls) */
+    text-align: center;
+    position: relative; /* Essential for the absolute positioning of the GCash logo */
+}
+   
+#gcash-logo {
+    position: absolute;
+    bottom: 20%;      /* Distance from the bottom */
+    right: -80%;       /* Distance from the right (negative moves it slightly off-edge) */
+    width: 500px;     /* Adjust size as needed */
+    opacity: 0.15;    /* Makes it transparent (0.0 to 1.0) */
+    z-index: -1;      /* Pushes it BEHIND the slots and buttons */
+    transform: rotate(-15deg); /* Tilts the logo */
+    pointer-events: none; /* Makes sure you can still click buttons through it */
+}
+#pagcor-logo { 
+    height: 70px; 
+    opacity: 0.8; 
+    margin-bottom: 15px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#keitho {
+    position: absolute;
+    top: 10%;
+    left: -80%;
+    width: 600px;
+    opacity: 0.5;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.stats { 
+    font-size: 1.4rem; 
+    margin-bottom: 20px; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    gap: 30px; 
+}
+
+#betInput {
+    background: #16213e;
+    color: #4ef037;
+    border: 1px solid #ff002b;
+    border-radius: 4px;
+    padding: 3px;
+    width: 50px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.slot-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 75px);
+    grid-template-rows: repeat(6, 75px);
+    gap: 8px;
+    padding: 15px;
+    border-radius: 12px;
+    margin: 0 auto 20px auto;
+    
+    /* Replace static border with an animated glow */
+    border: 5px solid transparent;
+    background: linear-gradient(#1a1a2e, #1a1a2e) padding-box,
+                linear-gradient(45deg, #ff0000, #002bff, #ff0000) border-box;
+    background-size: 200% 200%;
+    animation: gridGlow 5s linear infinite;
+}
+
+@keyframes gridGlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+footer {
+    margin-top: 30px;
+    padding: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    width: 100%;
+}
+
+.footer-site-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: #e94560; /* Matches your button color */
+    margin-bottom: 5px;
+}
+
+.footer-note {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+footer {
+    margin-top: 30px;
+    padding: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    width: 100%;
+}
+
+.footer-site-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: #e94560; /* Matches your button color */
+    margin-bottom: 5px;
+}
+
+.footer-note {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Ensure the background logos don't cover the footer text */
+#gcash-logo, #keitho {
+    z-index: -1;
+}
+/* Update the existing .slot container */
+.slot {
+    background: #16213e; /* Set to your inner dark grid color */
+    width: 75px;
+    height: 75px;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+    /* Remove standard CSS border */
+    border: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5); /* Optional: Soft glow */
+}
+
+/* THE ROTATING GRADIENT ELEMENT */
+.slot::before {
+    content: '';
+    position: absolute;
+    width: 150%;  /* Must be larger than the slot to cover corners during rotation */
+    height: 150%;
+    top: -25%;    /* Center it */
+    left: -25%;
+    
+    /* Animated Gradient (colors from image) */
+    background: conic-gradient(
+        transparent, 
+        #FF9100 20%, /* Main Orange */
+        #FF4500 40%, /* Orange-Red accent */
+        transparent 60%
+    );
+    
+    /* Animation Rule */
+    animation: rotateBorder 3s linear infinite;
+    z-index: 1; /* Place above the background, but below the inner mask */
+}
+
+/* THE INNER MASK (Creates the 'line' look) */
+.slot::after {
+    content: '';
+    position: absolute;
+    inset: 3px; /* How thick the border line is (e.g., 3px) */
+    background: #fff; /* The visual inner slot color (or set to your dark theme) */
+    border-radius: 4px; /* Slightly smaller than parent to match corner curve */
+    z-index: 2; /* Place on top of the gradient */
+}
+
+/* Ensure the reel content is on the highest layer */
+.reel {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    position: relative;
+    z-index: 3; /* Must be highest to show over the border elements */
+}
+
+/* --- THE ROTATION KEYFRAMES --- */
+@keyframes rotateBorder {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.symbol {
+    height: 75px;
+    width: 75px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.2rem;
+}
+
+.gold { color: gold; text-shadow: 0 0 8px gold; font-weight: bold; }
+
+button {
+    padding: 12px 30px;
+    font-size: 1.2rem;
+    background: #e94560;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    margin: 0 5px;
+}
+
+button:disabled { background: #444; cursor: not-allowed; }
+
+#status { margin-top: 15px; font-weight: bold; font-size: 1.2rem; min-height: 1.5em; }
+
+#jackpot-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.9); z-index: 100; justify-content: center;
+    align-items: center; flex-direction: column; color: gold; text-align: center;
+}
+
+.shake { animation: shake 0.2s infinite; }
+@keyframes shake {
+    0% { transform: translate(2px, 2px); }
+    50% { transform: translate(-2px, -2px); }
+    100% { transform: translate(2px, 2px); }
+}
